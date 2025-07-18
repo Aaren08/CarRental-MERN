@@ -1,0 +1,41 @@
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.titleAlignLeft {
+  text-align: left;
+}
+
+.title h1 {
+  font-size: 2.25rem;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+}
+
+.title p {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var((--color-textGray500), 0.9);
+  max-width: 39rem;
+}
+
+/* MEDIA QUERIES */
+
+@media (min-width: 768px) {
+  .titleAlignLeft {
+    align-items: flex-start;
+  }
+
+  .title h1 {
+    font-size: 40px;
+  }
+
+  .title p {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+}
