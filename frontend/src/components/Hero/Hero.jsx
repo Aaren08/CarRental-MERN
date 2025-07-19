@@ -56,7 +56,7 @@ const Hero = () => {
         </div>
       </form>
 
-      <img src={assets.main_car} alt="car" style={{ maxHeight: "18.5rem" }} />
+      <img src={assets.main_car} alt="car" className="hero-image" />
     </div>
   );
 };

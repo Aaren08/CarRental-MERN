@@ -1,10 +1,18 @@
+import { useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets.js";
 import "./CarCard.css";
 
 const CarCard = ({ car }) => {
   const currency = import.meta.env.VITE_CURRENCY;
+  const navigate = useNavigate();
   return (
-    <div className="car-card group">
+    <div
+      onClick={() => {
+        navigate(`/car-details/${car._id}`);
+        scrollTo(0, 0);
+      }}
+      className="car-card group"
+    >
       <div className="car-card-image-container">
         <img src={car.image} alt="car image" className="car-card-image" />
         {car.isAvailable && <p className="car-available">Available Now</p>}

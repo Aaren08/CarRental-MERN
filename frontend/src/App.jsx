@@ -5,6 +5,7 @@ import Home from "./pages/HomePage/Home.jsx";
 import CarDetails from "./pages/CarDetailsPage/CarDetails.jsx";
 import Cars from "./pages/CarsPage/Cars.jsx";
 import MyBookings from "./pages/MyBookingsPage/MyBookings.jsx";
+import Footer from "./components/Footer/Footer.jsx";
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/cars" element={<Cars />} />
         <Route path="/my-bookings" element={<MyBookings />} />
       </Routes>
+      {!isOwnerPath && <Footer />}
     </div>
   );
 };

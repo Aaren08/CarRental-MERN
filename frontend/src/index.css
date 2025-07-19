@@ -9,6 +9,8 @@
   --color-textGray400: #6b7280;
   --color-textGray500: #374151;
   --color-textGray600: #4b5563;
+  --color-textGray700: #1f2937;
+  --color-textGray800: #111827;
   --color-mutedforeground: #9ca3af;
   --border-roundedFull: 9999px;
 }
@@ -39,4 +41,8 @@ select {
   outline: none;
   background-color: transparent;
   color: inherit;
+}
+
+ul {
+  list-style: none;
 }
