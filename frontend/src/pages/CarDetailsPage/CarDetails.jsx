@@ -1,7 +1,152 @@
+import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { dummyCarData, assets } from "../../assets/assets.js";
+import Spinner from "../../utils/Spinner/Spinner.jsx";
 import "./CarDetails.css";
 
 const CarDetails = () => {
-  return <div>CarDetails</div>;
+  const { id } = useParams();
+  const navigate = useNavigate();
+  let currency = import.meta.env.VITE_CURRENCY;
+
+  const [car, setCar] = useState({});
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  };
+
+  useEffect(() => {
+    setCar(dummyCarData.find((car) => car._id === id));
+  }, [id]);
+
+  return car ? (
+    <div className="car-details">
+      <button className="car-details-backBtn" onClick={() => navigate(-1)}>
+        <img src={assets.arrow_icon} alt="arrow" />
+        Back to all cars
+      </button>
+
+      <div className="car-details-container">
+        {/* LEFT -> CAR DETAILS */}
+        <div className="car-details-left">
+          <img src={car.image} alt="car image" className="car-details-image" />
+          <div className="car-details-info">
+            <div>
+              <h1>
+                {car.brand} {car.model}
+              </h1>
+              <p>
+                {car.category} • {car.year}
+              </p>
+            </div>
+
+            <hr className="car-details-divider" />
+
+            {/* CAR SPECIFICATIONS */}
+
+            <div className="car-details-specs">
+              {[
+                {
+                  icon: assets.users_icon,
+                  text: `${car.seating_capacity} Seats`,
+                },
+                {
+                  icon: assets.fuel_icon,
+                  text: car.fuel_type,
+                },
+                {
+                  icon: assets.car_icon,
+                  text: car.transmission,
+                },
+                {
+                  icon: assets.location_icon,
+                  text: car.location,
+                },
+              ].map(({ icon, text }) => (
+                <div key={text} className="car-details-specs-item">
+                  <img
+                    src={icon}
+                    alt="image"
+                    className="car-details-specs-icon"
+                  />
+                  {text}
+                </div>
+              ))}
+            </div>
+
+            {/* CAR DESCRIPTION */}
+
+            <div className="car-details-description">
+              <h1>Description</h1>
+              <p>{car.description}</p>
+            </div>
+
+            {/* CAR FEATURES */}
+
+            <div className="car-details-features">
+              <h1>Features</h1>
+              <ul>
+                {[
+                  "Automatic Air Conditioning",
+                  "Bluetooth",
+                  "GPS Navigation",
+                  "Heated Seats",
+                  "360 Camera",
+                  "Sunroof",
+                ].map((feature) => (
+                  <li key={feature} className="car-details-features-item">
+                    <img
+                      src={assets.check_icon}
+                      alt="check icon"
+                      className="car-details-features-icon"
+                    />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT -> BOOKING FORM */}
+
+        <form onSubmit={handleSubmit} className="car-details-form-right">
+          <p className="car-details-form-title">
+            {currency} {car.pricePerDay} <span> per day</span>
+          </p>
+
+          <hr className="car-details-from-divider" />
+
+          <div className="car-details-form-date">
+            <label htmlFor="pickup-date">Pickup Date</label>
+            <input
+              type="date"
+              className="car-details-form-input"
+              id="pickup-date"
+              min={new Date().toISOString().split("T")[0]}
+              required
+            />
+          </div>
+
+          <div className="car-details-form-date">
+            <label htmlFor="return-date">Return Date</label>
+            <input
+              type="date"
+              className="car-details-form-input"
+              id="return-date"
+              required
+            />
+          </div>
+          <button className="car-details-form-button">Book Now</button>
+          <p className="car-details-form-credit">
+            No credit card required to reserve
+          </p>
+        </form>
+      </div>
+    </div>
+  ) : (
+    <Spinner />
+  );
 };
 
 export default CarDetails;
