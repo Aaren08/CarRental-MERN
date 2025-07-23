@@ -1,0 +1,164 @@
+.my-bookings {
+  padding: 0 1.5rem;
+  margin-top: 4rem;
+  font-size: 0.875rem;
+  line-height: 2.2rem;
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* CAR BOOKINGS */
+
+.my-bookings-card {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+}
+.my-bookings-card:first-child {
+  margin-top: 3rem;
+}
+
+.my-bookings-card-image-container {
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.my-bookings-card-image {
+  width: 100%;
+  border-radius: 0.75rem;
+  height: auto;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+
+.my-bookings-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.my-bookings-card-subtitle {
+  color: var(--color-textGray500);
+}
+
+/* BOOKING INFO */
+
+.my-bookings-card-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.my-bookings-card-info-item-title {
+  background-color: var(--color-light);
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.my-bookings-card-info-item-status {
+  border-radius: var(--border-roundedFull);
+  padding: 0.1rem 0.8rem;
+  font-size: 0.75rem;
+}
+
+.confirmed {
+  background-color: color-mix(in srgb, var(--color-green400) 15%, transparent);
+  color: var(--color-green600);
+}
+
+.pending {
+  background-color: color-mix(in srgb, var(--color-red400) 15%, transparent);
+  color: var(--color-red600);
+}
+
+.my-bookings-card-info-2 {
+  grid-column: span 2 / span 2;
+}
+
+.my-bookings-card-info-3 {
+  display: flex;
+  align-items: start;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.my-bookings-card-info-3 p:nth-child(1) {
+  color: var(--color-textGray400);
+}
+
+.my-bookings-card-info-calendar-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+/* BOOKING PRICE */
+
+.my-bookings-card-info-price {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.my-bookings-card-info-price-item {
+  font-size: 0.875rem;
+  color: var(--color-textGray500);
+  text-align: right;
+}
+
+.my-bookings-card-info-price-item h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* MEDIA QUERIES */
+
+@media (min-width: 1536px) {
+  .my-bookings {
+    padding: 0 10rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .my-bookings {
+    padding: 0 8rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .my-bookings {
+    padding: 0 6rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .my-bookings {
+    padding: 0 4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .my-bookings-card {
+    grid-template-columns: 1fr;
+  }
+
+  .my-bookings-card-info {
+    grid-column: span 1 / span 1;
+  }
+
+  .my-bookings-card-info-2 {
+    grid-column: span 2 / span 2;
+  }
+
+  .my-bookings-card-info-price {
+    grid-column: span 1 / span 1;
+  }
+}
