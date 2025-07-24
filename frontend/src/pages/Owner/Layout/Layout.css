@@ -1,0 +1,8 @@
+.owner-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.owner-layout-sidebar {
+  display: flex;
+}

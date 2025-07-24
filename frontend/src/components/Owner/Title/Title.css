@@ -1,0 +1,22 @@
+.owner-title {
+  font-weight: 500;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.owner-subtitle {
+  color: var(--color-textGray500, 0.9);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  margin-top: 0.5rem;
+  max-width: 39rem;
+}
+
+/* MEDIA QUERIES */
+
+@media (min-width: 768px) {
+  .owner-subtitle {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+}

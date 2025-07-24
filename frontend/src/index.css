@@ -2,9 +2,11 @@
 
 :root {
   --color-primary: #2563eb;
+  --color-primary-rgb: 37, 99, 235;
   --color-primary-dull: #1f58d8;
   --color-light: #f1f5f9;
   --color-dark: #0c0c1b;
+  --color-dark-rgb: 12, 12, 27;
   --color-border: #c4c7d2;
   --color-textGray400: #6b7280;
   --color-textGray500: #374151;
