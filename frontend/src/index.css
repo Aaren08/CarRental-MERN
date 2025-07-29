@@ -14,9 +14,14 @@
   --color-textGray700: #1f2937;
   --color-textGray800: #111827;
   --color-mutedforeground: #9ca3af;
+  --color-gray100: #f3f4f6;
+  --color-green100: #dcfce7;
   --color-green400: #22c55e;
+  --color-green500: #10b981;
   --color-green600: #16a34a;
+  --color-red100: #fee2e2;
   --color-red400: #ef4444;
+  --color-red500: #f87171;
   --color-red600: #dc2626;
   --border-roundedFull: 9999px;
 }
