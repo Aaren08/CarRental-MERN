@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import Car from "../models/carModel.js";
+import Booking from "../models/bookingModel.js";
 import fs from "fs";
 import imagekit from "../configs/imageKit.js";
 
@@ -131,7 +132,74 @@ export const getDashboardData = async (req, res) => {
     }
 
     const cars = await Car.find({ owner: _id });
-    res.status(200).json({ success: true, cars });
+    const bookings = await Booking.find({ owner: _id }).populate("car").sort({
+      createdAt: -1,
+    });
+    const pendingBookings = await Booking.find({
+      owner: _id,
+      status: "pending",
+    });
+    const completedBookings = await Booking.find({
+      owner: _id,
+      status: "confirmed",
+    });
+
+    // CALCULATE MONTHLY REVENUE
+    const monthlyRevenue = bookings
+      .slice()
+      .filter((booking) => booking.status === "confirmed")
+      .reduce((acc, booking) => acc + booking.price, 0);
+
+    const dashboardData = {
+      totalCars: cars.length,
+      totalBookings: bookings.length,
+      pendingBookings: pendingBookings.length,
+      completedBookings: completedBookings.length,
+      recentBookings: bookings.slice(0, 3),
+      monthlyRevenue,
+    };
+
+    res.status(200).json({ success: true, dashboardData });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// UPDATE USER IMAGE
+export const updateUserImage = async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { imageFile } = req.file;
+
+    // STORING IMAGE ON IMAGEKIT
+    const fileBuffer = fs.readFileSync(imageFile.path);
+    const response = await imagekit.upload({
+      file: fileBuffer,
+      fileName: imageFile.originalname,
+      folder: "/users",
+    });
+
+    // IMAGE OPTIMIZATION WITH IMAGEKIT
+    const optimizedImageUrl = imagekit.url({
+      path: response.filePath,
+      transformation: [
+        {
+          width: "400",
+        },
+        {
+          quality: "auto",
+        },
+        {
+          format: "webp",
+        },
+      ],
+    });
+
+    const image = optimizedImageUrl;
+    await User.findByIdAndUpdate(_id, { image });
+
+    res.status(200).json({ success: true, message: "Profile image updated" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: error.message });
