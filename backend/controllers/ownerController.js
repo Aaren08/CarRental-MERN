@@ -1,5 +1,7 @@
 import User from "../models/userModel.js";
 import Car from "../models/carModel.js";
+import fs from "fs";
+import imagekit from "../configs/imageKit.js";
 
 // CHANGE ROLE TO OWNER
 export const changeRoleToOwner = async (req, res) => {
@@ -29,7 +31,107 @@ export const listCar = async (req, res) => {
     let car = JSON.parse(req.body.carData);
     const imageFile = req.file;
 
+    // STORING IMAGE ON IMAGEKIT
+    const fileBuffer = fs.readFileSync(imageFile.path);
+    const response = await imagekit.upload({
+      file: fileBuffer,
+      fileName: imageFile.originalname,
+      folder: "/cars",
+    });
+
+    // IMAGE OPTIMIZATION WITH IMAGEKIT
+    const optimizedImageUrl = imagekit.url({
+      path: response.filePath,
+      transformation: [
+        {
+          width: "1280",
+        },
+        {
+          quality: "auto",
+        },
+        {
+          format: "webp",
+        },
+      ],
+    });
+
+    const image = optimizedImageUrl;
+    await Car.create({ ...car, image, owner: _id });
     res.status(200).json({ success: true, message: "Car listed successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// GET OWNER CARS
+export const getOwnerCars = async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const cars = await Car.find({ owner: _id }).populate("owner");
+    res.status(200).json({ success: true, cars });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// TOGGLE CAR AVAILABILITY
+export const toggleCarAvailability = async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { carId } = req.body;
+    const car = await Car.findById(carId);
+
+    // CHECK IF CAR BELONGS TO USER
+    if (car.owner.toString() !== _id.toString()) {
+      return res.status(400).json({ success: false, message: "Unauthorized" });
+    }
+
+    car.isAvailable = !car.isAvailable;
+    await car.save();
+    res
+      .status(200)
+      .json({ success: true, message: "Car availability toggled" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// DELETE A CAR
+export const deleteCar = async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const { carId } = req.body;
+    const car = await Car.findById(carId);
+
+    // CHECK IF CAR BELONGS TO USER
+    if (car.owner.toString() !== _id.toString()) {
+      return res.status(400).json({ success: false, message: "Unauthorized" });
+    }
+
+    await Car.findByIdAndDelete(carId);
+    res
+      .status(200)
+      .json({ success: true, message: "Car deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// GET DASHBOARD DATA
+export const getDashboardData = async (req, res) => {
+  try {
+    const { _id, role } = req.user;
+
+    if (role !== "owner") {
+      return res.status(400).json({ success: false, message: "Unauthorized" });
+    }
+
+    const cars = await Car.find({ owner: _id });
+    res.status(200).json({ success: true, cars });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: error.message });
