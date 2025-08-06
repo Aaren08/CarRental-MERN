@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import Navbar from "./components/Navbar/Navbar.jsx";
 import Home from "./pages/HomePage/Home.jsx";
 import CarDetails from "./pages/CarDetailsPage/CarDetails.jsx";
@@ -18,6 +19,7 @@ const App = () => {
   const isOwnerPath = useLocation().pathname.startsWith("/owner");
   return (
     <div>
+      <Toaster />
       {showLogin && <Login setShowLogin={setShowLogin} />}
       {!isOwnerPath && <Navbar setShowLogin={setShowLogin} />}
 
