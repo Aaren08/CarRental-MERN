@@ -2,21 +2,31 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
 export const protect = async (req, res, next) => {
-  const token = req.headers.authorization;
-  if (!token) {
-    return res.status(401).json({ success: false, message: "Unauthorized" });
+  if (
+    !req.headers.authorization ||
+    !req.headers.authorization.startsWith("Bearer ")
+  ) {
+    return res
+      .status(401)
+      .json({ success: false, message: "No token provided" });
   }
 
   try {
-    const userId = jwt.decode(token, process.env.JWT_SECRET);
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (!userId) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+    req.user = await User.findById(decoded.id).select("-password");
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ success: false, message: "User not found" });
     }
-    req.user = await User.findById(userId.id).select("-password");
+
     next();
-  } catch (error) {
-    console.log(error);
-    return res.status(401).json({ success: false, message: "Unauthorized" });
+  } catch (err) {
+    console.error("JWT error:", err.message);
+    return res
+      .status(401)
+      .json({ success: false, message: "Invalid or expired token" });
   }
 };

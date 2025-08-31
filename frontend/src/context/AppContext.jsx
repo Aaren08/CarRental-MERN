@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import toast, { Toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { AppContext } from "./ContexedApp.js";
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
@@ -19,31 +19,31 @@ export const AppProvider = ({ children }) => {
   const currency = import.meta.env.VITE_CURRENCY;
 
   // FUNCTION TO CHECK IF USER IS LOGGED IN
-  const checkUser = useCallback(async () => {
-    try {
-      const { data } = await axios.get("/api/user/data", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  const checkUser = useCallback(
+    async (passedToken) => {
+      try {
+        const { data } = await axios.get("/api/user/data", {
+          headers: { Authorization: `Bearer ${passedToken}` },
+        });
 
-      if (data.success) {
-        setUser(data.user);
-        setIsOwner(data.user.role === "owner");
-      } else {
-        navigate("/");
+        if (data.success) {
+          setUser(data.user);
+          setIsOwner(data.user.role === "owner");
+        } else {
+          navigate("/");
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message || error.message);
       }
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }, [token, navigate]);
+    },
+    [navigate]
+  );
 
-  // RETRIEVE TOKEN FROM LOCAL STORAGE
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setToken(token);
-      checkUser();
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+      checkUser(storedToken);
     }
   }, [checkUser]);
 

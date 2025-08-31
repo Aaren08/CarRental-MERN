@@ -6,11 +6,9 @@ import imagekit from "../configs/imageKit.js";
 
 // CHANGE ROLE TO OWNER
 export const changeRoleToOwner = async (req, res) => {
-  const { _id } = req.params;
-
   try {
     const updatedUser = await User.findByIdAndUpdate(
-      _id,
+      req.user._id,
       { role: "owner" },
       { new: true }
     );

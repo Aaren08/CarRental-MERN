@@ -1,14 +1,51 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import toast from "react-hot-toast";
+import { useAppContext } from "../../context/ContexedApp.js";
 import "./Login.css";
-const Login = ({ setShowLogin }) => {
+const Login = () => {
+  const { axios, setShowLogin, setToken, setUser, navigate } = useAppContext();
   const [state, setState] = useState("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const onSubmitHandler = async (e) => {
-    e.preventDefault();
-  };
+  const onSubmitHandler = useCallback(
+    async (e) => {
+      try {
+        e.preventDefault();
+
+        const { data } = await axios.post(`/api/user/${state}`, {
+          name,
+          email,
+          password,
+        });
+        if (data.success) {
+          navigate("/");
+          localStorage.setItem("token", data.token);
+          setToken(data.token);
+          setShowLogin(false);
+          setUser(data.user);
+          toast.success(data.message);
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        console.log("Error response:", error.response);
+        toast.error(error.response.data.message);
+      }
+    },
+    [
+      state,
+      name,
+      email,
+      password,
+      navigate,
+      setUser,
+      setShowLogin,
+      setToken,
+      axios,
+    ]
+  );
 
   useEffect(() => {
     document.body.style.overflow = "hidden";

@@ -1,12 +1,36 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { assets, menuLinks } from "../../assets/assets.js";
+import { useAppContext } from "../../context/ContexedApp.js";
 import "./Navbar.css";
 
-const Navbar = ({ setShowLogin }) => {
+const Navbar = () => {
+  const { setShowLogin, user, logoutUser, isOwner, axios, setIsOwner } =
+    useAppContext();
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const changeRole = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const { data } = await axios.post(
+        "/api/owner/change-role",
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (data.success) {
+        setIsOwner(true);
+        toast.success(data.message);
+      } else {
+        toast.error("Not authorized");
+      }
+    } catch (err) {
+      console.error("changeRole error:", err.response?.data || err.message);
+      toast.error("Not authorized");
+    }
+  };
 
   return (
     <div className={`navbar  ${location.pathname === "/" && "active"}`}>
@@ -37,19 +61,26 @@ const Navbar = ({ setShowLogin }) => {
         </div>
 
         {/* BUTTONS */}
-
         <div className="nav-btns">
-          <button className="dashboardBtn" onClick={() => navigate("/owner")}>
-            Dashboard
+          <button
+            className="dashboardBtn"
+            onClick={() => (isOwner ? navigate("/owner") : changeRole())}
+          >
+            {isOwner ? "Dashboard" : "List Cars"}
           </button>
-          <button className="loginBtn" onClick={() => setShowLogin(true)}>
-            Login
+
+          <button
+            className="loginBtn"
+            onClick={() => {
+              user ? logoutUser() : setShowLogin(true);
+            }}
+          >
+            {user ? "Logout" : "Login"}
           </button>
         </div>
       </div>
 
       {/* MENU DISPLAY ON MOBILE SCREEN */}
-
       <button
         className="menu-icon"
         aria-label="Menu"
