@@ -168,7 +168,7 @@ export const getDashboardData = async (req, res) => {
 export const updateUserImage = async (req, res) => {
   try {
     const { _id } = req.user;
-    const { imageFile } = req.file;
+    const imageFile = req.file;
 
     // STORING IMAGE ON IMAGEKIT
     const fileBuffer = fs.readFileSync(imageFile.path);
@@ -199,7 +199,7 @@ export const updateUserImage = async (req, res) => {
 
     res.status(200).json({ success: true, message: "Profile image updated" });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error reading file" });
   }
 };

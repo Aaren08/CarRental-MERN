@@ -1,19 +1,56 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import toast from "react-hot-toast";
 import Title from "../../../components/Owner/Title/Title.jsx";
-import { dummyMyBookingsData } from "../../../assets/assets.js";
+import { useAppContext } from "../../../context/ContexedApp.js";
 import "./ManageBookings.css";
 
 const ManageBookings = () => {
+  const { axios, currency, token } = useAppContext();
   const [bookings, setBookings] = useState([]);
-  const currency = import.meta.env.VITE_CURRENCY;
 
-  const fetchOwnerBookings = async () => {
-    setBookings(dummyMyBookingsData);
-  };
+  const fetchOwnerBookings = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/bookings/owner", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (data.success) {
+        setBookings(data.bookings);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  }, [axios, token]);
+
+  const changeBookingStatus = useCallback(
+    async (bookingId, status) => {
+      try {
+        const { data } = await axios.post(
+          "/api/bookings/change-status",
+          { bookingId, status },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (data.success) {
+          fetchOwnerBookings();
+          toast.success(data.message);
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message || error.message);
+      }
+    },
+    [axios, token, fetchOwnerBookings]
+  );
 
   useEffect(() => {
-    fetchOwnerBookings();
-  }, []);
+    if (token) {
+      fetchOwnerBookings();
+    }
+  }, [token, fetchOwnerBookings]);
 
   return (
     <div className="manage-bookings">
@@ -68,7 +105,12 @@ const ManageBookings = () => {
                 {/* ACTIONS */}
                 <td className="manage-bookings-table-row-actions">
                   {booking.status === "pending" ? (
-                    <select value={booking.status}>
+                    <select
+                      value={booking.status}
+                      onChange={(e) =>
+                        changeBookingStatus(booking._id, e.target.value)
+                      }
+                    >
                       <option value="pending">Pending</option>
                       <option value="cancelled">Cancelled</option>
                       <option value="confirmed">Confirmed</option>

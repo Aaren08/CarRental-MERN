@@ -1,10 +1,14 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import Title from "../../../components/Owner/Title/Title.jsx";
 import { assets } from "../../../assets/assets.js";
+import { useAppContext } from "../../../context/ContexedApp.js";
 import "./AddCar.css";
 
 const AddCar = () => {
+  const { axios, currency, checkUser, token } = useAppContext();
   const [image, setImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [car, setCar] = useState({
     brand: "",
     model: "",
@@ -17,10 +21,43 @@ const AddCar = () => {
     location: "",
     description: "",
   });
-  const currency = import.meta.env.VITE_CURRENCY;
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    if (isLoading) return null;
+    setIsLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("image", image);
+      formData.append("carData", JSON.stringify(car));
+      const { data } = await axios.post("/api/owner/add-car", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (data.success) {
+        checkUser(token);
+        setImage(null);
+        setCar({
+          brand: "",
+          model: "",
+          year: 0,
+          pricePerDay: 0,
+          category: "",
+          transmission: "",
+          fuel_type: "",
+          seating_capacity: 0,
+          location: "",
+          description: "",
+        });
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -197,7 +234,17 @@ const AddCar = () => {
         </div>
 
         <button className="add-car-form-button">
-          <img src={assets.tick_icon} alt="tick icon" /> List Your Car
+          {isLoading ? (
+            <>
+              <span>Listing Car</span>
+              <span className="listingCarLoader"></span>
+            </>
+          ) : (
+            <>
+              <img src={assets.tick_icon} alt="tick icon" />
+              <span>List Your Car</span>
+            </>
+          )}
         </button>
       </form>
     </div>

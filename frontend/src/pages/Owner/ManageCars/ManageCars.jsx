@@ -1,19 +1,82 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import toast from "react-hot-toast";
 import Title from "../../../components/Owner/Title/Title.jsx";
-import { assets, dummyCarData } from "../../../assets/assets.js";
+import { assets } from "../../../assets/assets.js";
+import { useAppContext } from "../../../context/ContexedApp.js";
 import "./ManageCars.css";
 
 const ManageCars = () => {
+  const { isOwner, axios, currency, token } = useAppContext();
   const [cars, setCars] = useState([]);
-  const currency = import.meta.env.VITE_CURRENCY;
 
-  const fetchOwnerCars = async () => {
-    setCars(dummyCarData);
-  };
+  const fetchOwnerCars = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/owner/cars", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (data.success) {
+        setCars(data.cars);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  }, [axios, token]);
+
+  const toggleAvailability = useCallback(
+    async (carId) => {
+      try {
+        const { data } = await axios.post(
+          "/api/owner/toggle-car",
+          { carId },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (data.success) {
+          fetchOwnerCars();
+          toast.success(data.message);
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message || error.message);
+      }
+    },
+    [axios, token, fetchOwnerCars]
+  );
+
+  const deleteCar = useCallback(
+    async (carId) => {
+      try {
+        const confirm = window.confirm(
+          "Are you sure you want to delete this car?"
+        );
+        if (!confirm) return;
+        const { data } = await axios.post(
+          "/api/owner/delete-car",
+          { carId },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (data.success) {
+          fetchOwnerCars();
+          toast.success(data.message);
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message || error.message);
+      }
+    },
+    [axios, token, fetchOwnerCars]
+  );
 
   useEffect(() => {
-    fetchOwnerCars();
-  }, []);
+    isOwner && fetchOwnerCars();
+  }, [isOwner, fetchOwnerCars]);
 
   return (
     <div className="manage-cars">
@@ -86,11 +149,13 @@ const ManageCars = () => {
                     }
                     alt="availability icon"
                     className="manage-cars-table-row-actions-icon"
+                    onClick={() => toggleAvailability(car._id)}
                   />
                   <img
                     src={assets.delete_icon}
                     alt="delete icon"
                     className="manage-cars-table-row-actions-icon"
+                    onClick={() => deleteCar(car._id)}
                   />
                 </td>
               </tr>

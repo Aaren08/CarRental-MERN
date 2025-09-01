@@ -1,9 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import toast from "react-hot-toast";
 import Title from "../../../components/Owner/Title/Title.jsx";
-import { dummyDashboardData, assets } from "../../../assets/assets.js";
+import { assets } from "../../../assets/assets.js";
+import { useAppContext } from "../../../context/ContexedApp.js";
 import "./Dashboard.css";
 
 const Dashboard = () => {
+  const { axios, isOwner, currency, token } = useAppContext();
+
   const [data, setData] = useState({
     totalCars: 0,
     totalBookings: 0,
@@ -32,11 +36,23 @@ const Dashboard = () => {
     },
   ];
 
-  const currency = import.meta.env.VITE_CURRENCY;
+  // FUNCTION TO FETCH DASHBOARD DATA FROM SERVER
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/owner/dashboard", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      data.success ? setData(data.dashboardData) : toast.error(data.message);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }, [axios, token]);
 
   useEffect(() => {
-    setData(dummyDashboardData);
-  }, []);
+    if (isOwner) {
+      fetchDashboardData();
+    }
+  }, [isOwner, fetchDashboardData]);
 
   return (
     <div className="owner-dashboard">
