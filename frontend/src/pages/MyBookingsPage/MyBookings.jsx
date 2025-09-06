@@ -1,20 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import toast from "react-hot-toast";
 import Title from "../../components/Title/Title.jsx";
-import { assets, dummyMyBookingsData } from "../../assets/assets.js";
+import { assets } from "../../assets/assets.js";
+import { useAppContext } from "../../context/ContexedApp.js";
 import "./MyBookings.css";
 
 const MyBookings = () => {
+  const { axios, user, currency, token } = useAppContext();
   const [bookings, setBookings] = useState([]);
 
-  const currency = import.meta.env.VITE_CURRENCY;
-
-  const fetchMyBookings = async () => {
-    setBookings(dummyMyBookingsData);
-  };
+  const fetchMyBookings = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/bookings/user", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (data.success) {
+        setBookings(data.bookings);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    }
+  }, [token, axios]);
 
   useEffect(() => {
-    fetchMyBookings();
-  }, []);
+    user && fetchMyBookings();
+  }, [user, fetchMyBookings]);
 
   return (
     <div className="my-bookings">

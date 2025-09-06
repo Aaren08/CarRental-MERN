@@ -3,10 +3,13 @@ import Booking from "../models/bookingModel.js";
 
 // CHECK AVAILABILITY OF A CAR FOR GIVEN DATE
 export const checkCarAvailability = async (car, pickupDate, returnDate) => {
+  const pickup = new Date(pickupDate);
+  const ret = new Date(returnDate);
+
   const bookings = await Booking.find({
     car,
-    pickupDate: { $lte: returnDate },
-    returnDate: { $gte: pickupDate },
+    pickupDate: { $lte: ret },
+    returnDate: { $gte: pickup },
   });
 
   return bookings.length === 0;
@@ -25,12 +28,13 @@ export const checkCarAvailabilityForLocation = async (req, res) => {
         pickupDate,
         returnDate
       );
-      return { ...car._doc, isAvailable: isAvailable };
+      return { ...car._doc, isAvailable };
     });
 
-    const availableCars = await Promise.all(availableCarsPromise);
+    let availableCars = await Promise.all(availableCarsPromise);
     availableCars = availableCars.filter((car) => car.isAvailable);
-    res.status(200).json({ success: true, cars: availableCars });
+
+    res.status(200).json({ success: true, availableCars });
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ success: false, message: error.message });

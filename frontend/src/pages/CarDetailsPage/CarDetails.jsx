@@ -1,23 +1,58 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { dummyCarData, assets } from "../../assets/assets.js";
+import toast from "react-hot-toast";
+import { assets } from "../../assets/assets.js";
 import Spinner from "../../utils/Spinner/Spinner.jsx";
+import { useAppContext } from "../../context/ContexedApp.js";
 import "./CarDetails.css";
 
 const CarDetails = () => {
+  const {
+    cars,
+    axios,
+    token,
+    currency,
+    pickupDate,
+    setPickupDate,
+    returnDate,
+    setReturnDate,
+  } = useAppContext();
   const { id } = useParams();
   const navigate = useNavigate();
-  let currency = import.meta.env.VITE_CURRENCY;
 
   const [car, setCar] = useState({});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const { data } = await axios.post(
+        "/api/bookings/create",
+        {
+          car: id,
+          pickupDate,
+          returnDate,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (data.success) {
+        navigate("/my-bookings");
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error.message);
+      toast.error(error.response?.data?.message || error.message);
+    }
   };
 
   useEffect(() => {
-    setCar(dummyCarData.find((car) => car._id === id));
-  }, [id]);
+    setCar(cars.find((car) => car._id === id));
+  }, [id, cars]);
 
   return car ? (
     <div className="car-details">
@@ -62,8 +97,11 @@ const CarDetails = () => {
                   icon: assets.location_icon,
                   text: car.location,
                 },
-              ].map(({ icon, text }) => (
-                <div key={text} className="car-details-specs-item">
+              ].map(({ icon, text }, index) => (
+                <div
+                  key={`${text}-${index}`}
+                  className="car-details-specs-item"
+                >
                   <img
                     src={icon}
                     alt="image"
@@ -124,6 +162,8 @@ const CarDetails = () => {
               className="car-details-form-input"
               id="pickup-date"
               min={new Date().toISOString().split("T")[0]}
+              value={pickupDate}
+              onChange={(e) => setPickupDate(e.target.value)}
               required
             />
           </div>
@@ -134,6 +174,9 @@ const CarDetails = () => {
               type="date"
               className="car-details-form-input"
               id="return-date"
+              min={pickupDate}
+              value={returnDate}
+              onChange={(e) => setReturnDate(e.target.value)}
               required
             />
           </div>

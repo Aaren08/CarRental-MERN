@@ -1,14 +1,30 @@
 import { useState } from "react";
 import { assets, cityList } from "../../assets/assets.js";
+import { useAppContext } from "../../context/ContexedApp.js";
 import "./Hero.css";
 
 const Hero = () => {
+  const { pickupDate, setPickupDate, returnDate, setReturnDate, navigate } =
+    useAppContext();
   const [pickupLocation, setPickupLocation] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    navigate(
+      "/cars?pickupLocation=" +
+        pickupLocation +
+        "&pickupDate=" +
+        pickupDate +
+        "&returnDate=" +
+        returnDate
+    );
+  };
+
   return (
     <div className="hero">
       <h1 className="hero-title">Luxury Cars on Rent</h1>
 
-      <form className="hero-form">
+      <form onSubmit={handleSearch} className="hero-form">
         <div className="hero-form-input">
           {/* SELECT BOX */}
           <div className="select-box">
@@ -35,6 +51,8 @@ const Hero = () => {
               id="pickup-date"
               min={new Date().toISOString().split("T")[0]}
               className="date-input"
+              value={pickupDate}
+              onChange={(e) => setPickupDate(e.target.value)}
               required
             />
           </div>
@@ -45,7 +63,10 @@ const Hero = () => {
             <input
               type="date"
               id="return-date"
+              min={pickupDate}
               className="date-input"
+              value={returnDate}
+              onChange={(e) => setReturnDate(e.target.value)}
               required
             />
           </div>
