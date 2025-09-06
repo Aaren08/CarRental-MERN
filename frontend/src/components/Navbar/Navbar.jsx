@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { motion as Motion } from "motion/react";
 import { assets, menuLinks } from "../../assets/assets.js";
 import { useAppContext } from "../../context/ContexedApp.js";
 import "./Navbar.css";
@@ -33,9 +34,15 @@ const Navbar = () => {
   };
 
   return (
-    <div className={`navbar  ${location.pathname === "/" && "active"}`}>
+    <Motion.div
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className={`navbar  ${location.pathname === "/" && "active"}`}
+    >
       <Link to={"/"}>
-        <img
+        <Motion.img
+          whileHover={{ scale: 1.05 }}
           src={assets.logo}
           alt="logo"
           style={{ height: "2rem" }}
@@ -88,7 +95,7 @@ const Navbar = () => {
       >
         <img src={open ? assets.close_icon : assets.menu_icon} alt="menu" />
       </button>
-    </div>
+    </Motion.div>
   );
 };
 

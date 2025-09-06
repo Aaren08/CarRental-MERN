@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
+import { motion as Motion } from "motion/react";
 import Title from "../../components/Title/Title.jsx";
 import { assets } from "../../assets/assets.js";
 import { useAppContext } from "../../context/ContexedApp.js";
@@ -29,7 +30,12 @@ const MyBookings = () => {
   }, [user, fetchMyBookings]);
 
   return (
-    <div className="my-bookings">
+    <Motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="my-bookings"
+    >
       <Title
         title={"My Bookings"}
         subtitle={"View and manage your bookings"}
@@ -40,7 +46,13 @@ const MyBookings = () => {
 
       <div className="my-bookings-cards">
         {bookings.map((booking, index) => (
-          <div key={booking._id} className="my-bookings-card">
+          <Motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 * index }}
+            key={booking._id}
+            className="my-bookings-card"
+          >
             {/* CAR IMAGE */}
             <div className="my-bookings-card-info">
               <div className="my-bookings-card-image-container">
@@ -117,10 +129,10 @@ const MyBookings = () => {
                 <p>Booked on {booking.createdAt.split("T")[0]}</p>
               </div>
             </div>
-          </div>
+          </Motion.div>
         ))}
       </div>
-    </div>
+    </Motion.div>
   );
 };
 

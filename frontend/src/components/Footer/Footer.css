@@ -42,6 +42,14 @@
   transform: translateY(-0.25rem);
 }
 
+.footer-column-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+  width: 50%;
+}
+
 .footer-column {
   display: flex;
   flex-direction: column;

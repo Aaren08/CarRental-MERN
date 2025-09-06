@@ -1,3 +1,4 @@
+import { motion as Motion } from "motion/react";
 import { assets } from "../../assets/assets.js";
 import Title from "../Title/Title";
 import "./Testimonial.css";
@@ -36,7 +37,14 @@ const Testimonial = () => {
       />
       <div className="testimonials-list">
         {testimonials.map((testimonial, index) => (
-          <div key={index} className="testimonial-card">
+          <Motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: index * 0.2, ease: "easeOut" }}
+            viewport={{ once: true, amount: 0.3 }}
+            key={index}
+            className="testimonial-card"
+          >
             <div className="testimonial-header">
               <img
                 className="testimonial-avatar"
@@ -56,7 +64,7 @@ const Testimonial = () => {
                 ))}
             </div>
             <p className="testimonial-review">"{testimonial.testimonial}"</p>
-          </div>
+          </Motion.div>
         ))}
       </div>
     </div>

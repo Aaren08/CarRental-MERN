@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import { motion as Motion } from "motion/react";
 import { assets } from "../../assets/assets.js";
 import { useAppContext } from "../../context/ContexedApp.js";
 import "./Banner.css";
@@ -15,7 +16,12 @@ const Banner = () => {
   };
 
   return (
-    <div className="banner">
+    <Motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 30 }}
+      transition={{ duration: 0.6 }}
+      className="banner"
+    >
       <div className="banner-text">
         <h2>Do you own a luxury car?</h2>
         <p>
@@ -28,12 +34,15 @@ const Banner = () => {
         </p>
         <button onClick={handleListCar}>List your car</button>
       </div>
-      <img
+      <Motion.img
+        initial={{ opacity: 0, x: 50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
         src={assets.banner_car_image}
         alt="car image"
         className="banner-image"
       />
-    </div>
+    </Motion.div>
   );
 };
 

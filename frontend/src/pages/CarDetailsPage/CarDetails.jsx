@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { motion as Motion } from "motion/react";
 import { assets } from "../../assets/assets.js";
 import Spinner from "../../utils/Spinner/Spinner.jsx";
 import { useAppContext } from "../../context/ContexedApp.js";
@@ -63,9 +64,26 @@ const CarDetails = () => {
 
       <div className="car-details-container">
         {/* LEFT -> CAR DETAILS */}
-        <div className="car-details-left">
-          <img src={car.image} alt="car image" className="car-details-image" />
-          <div className="car-details-info">
+        <Motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="car-details-left"
+        >
+          <Motion.img
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            src={car.image}
+            alt="car image"
+            className="car-details-image"
+          />
+          <Motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="car-details-info"
+          >
             <div>
               <h1>
                 {car.brand} {car.model}
@@ -98,7 +116,10 @@ const CarDetails = () => {
                   text: car.location,
                 },
               ].map(({ icon, text }, index) => (
-                <div
+                <Motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
                   key={`${text}-${index}`}
                   className="car-details-specs-item"
                 >
@@ -108,7 +129,7 @@ const CarDetails = () => {
                     className="car-details-specs-icon"
                   />
                   {text}
-                </div>
+                </Motion.div>
               ))}
             </div>
 
@@ -143,12 +164,18 @@ const CarDetails = () => {
                 ))}
               </ul>
             </div>
-          </div>
-        </div>
+          </Motion.div>
+        </Motion.div>
 
         {/* RIGHT -> BOOKING FORM */}
 
-        <form onSubmit={handleSubmit} className="car-details-form-right">
+        <Motion.form
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          onSubmit={handleSubmit}
+          className="car-details-form-right"
+        >
           <p className="car-details-form-title">
             {currency} {car.pricePerDay} <span> per day</span>
           </p>
@@ -184,7 +211,7 @@ const CarDetails = () => {
           <p className="car-details-form-credit">
             No credit card required to reserve
           </p>
-        </form>
+        </Motion.form>
       </div>
     </div>
   ) : (

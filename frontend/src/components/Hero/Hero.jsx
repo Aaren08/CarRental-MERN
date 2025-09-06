@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { assets, cityList } from "../../assets/assets.js";
+import { motion as Motion } from "motion/react";
 import { useAppContext } from "../../context/ContexedApp.js";
 import "./Hero.css";
 
@@ -21,10 +22,28 @@ const Hero = () => {
   };
 
   return (
-    <div className="hero">
-      <h1 className="hero-title">Luxury Cars on Rent</h1>
+    <Motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+      className="hero"
+    >
+      <Motion.h1
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="hero-title"
+      >
+        Luxury Cars on Rent
+      </Motion.h1>
 
-      <form onSubmit={handleSearch} className="hero-form">
+      <Motion.form
+        initial={{ y: 50, opacity: 0, scale: 0.9 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        onSubmit={handleSearch}
+        className="hero-form"
+      >
         <div className="hero-form-input">
           {/* SELECT BOX */}
           <div className="select-box">
@@ -71,14 +90,26 @@ const Hero = () => {
             />
           </div>
 
-          <button className="searchBtn">
-            <img src={assets.search_icon} alt="search" /> Search
-          </button>
+          <Motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="searchBtn"
+          >
+            <img src={assets.search_icon} alt="search" />
+            Search
+          </Motion.button>
         </div>
-      </form>
+      </Motion.form>
 
-      <img src={assets.main_car} alt="car" className="hero-image" />
-    </div>
+      <Motion.img
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.6 }}
+        src={assets.main_car}
+        alt="car"
+        className="hero-image"
+      />
+    </Motion.div>
   );
 };
 
