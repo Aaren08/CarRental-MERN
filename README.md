@@ -200,7 +200,7 @@ Common response shape
 Notes and assumptions
 
 - The exact request field names for car data (when listing a car) are based on how `carData` is parsed in `ownerController.listCar` — `carData` must be sent as a JSON string in a `multipart/form-data` request together with the `image` file.
-- # Where endpoints require ownership checks (toggle/delete car, change booking status), the controllers enforce authorization and will return `400` with an `Unauthorized` message when checks fail.
+- Where endpoints require ownership checks (toggle/delete car, change booking status), the controllers enforce authorization and will return `400` with an `Unauthorized` message when checks fail.
 
 The CarRental-MERN project is a web application that allows users to rent cars. It is built using the MERN (MongoDB, Express, React, Node.js) stack.
 
