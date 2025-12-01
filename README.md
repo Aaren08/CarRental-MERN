@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # CarRental (MERN)
 
 Comprehensive documentation for the CarRental MERN sample project.
@@ -201,23 +200,23 @@ Common response shape
 Notes and assumptions
 
 - The exact request field names for car data (when listing a car) are based on how `carData` is parsed in `ownerController.listCar` — `carData` must be sent as a JSON string in a `multipart/form-data` request together with the `image` file.
-- Where endpoints require ownership checks (toggle/delete car, change booking status), the controllers enforce authorization and will return `400` with an `Unauthorized` message when checks fail.
-=======
- 
+- # Where endpoints require ownership checks (toggle/delete car, change booking status), the controllers enforce authorization and will return `400` with an `Unauthorized` message when checks fail.
+
 The CarRental-MERN project is a web application that allows users to rent cars. It is built using the MERN (MongoDB, Express, React, Node.js) stack.
 
 ### Main Function Points
+
 - Allows users to browse and rent cars
 - Provides a user-friendly interface for managing car rentals
 - Includes a backend API for handling car rental data
 
 ### Technology Stack
+
 - MongoDB: A NoSQL database for storing car rental data
 - Express.js: A web application framework for Node.js, used for building the backend API
 - React.js: A JavaScript library for building the user interface
 - Node.js: A JavaScript runtime environment for running the backend server
 
 ### License
-The project does not specify a license, so the default copyright applies.
 
->>>>>>> 8714dea227aa48fca6ddaabf580a9fbebc83906b
+The project does not specify a license, so the default copyright applies.
