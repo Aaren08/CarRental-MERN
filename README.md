@@ -79,130 +79,378 @@ General notes
 
   Authorization: Bearer <token>
 
-User endpoints
+### User Endpoints
 
-- POST /api/user/register
+#### Register a new user
 
-  - Description: Register a new user.
-  - Body (application/json): { name, email, password }
-  - Validation: password must be at least 8 characters.
-  - Response: { success, message, token, user: { id, name, email } }
+```http
+  POST /api/user/register
+```
 
-- POST /api/user/login
+| Parameter  | Type     | Description                               |
+| :--------- | :------- | :---------------------------------------- |
+| `name`     | `string` | **Required**. User's name                 |
+| `email`    | `string` | **Required**. User's email                |
+| `password` | `string` | **Required**. Password (min 8 characters) |
 
-  - Description: Login and receive a JWT token.
-  - Body (application/json): { email, password }
-  - Response: { success, message, token, user: { id, name, email } }
+**Response:**
 
-- GET /api/user/data
+```json
+{
+  "success": boolean,
+  "message": string,
+  "token": string,
+  "user": {
+    "id": string,
+    "name": string,
+    "email": string
+  }
+}
+```
 
-  - Description: Get the current users data (protected).
-  - Headers: Authorization: Bearer <token>
-  - Response: { success, user }
+#### Login user
 
-- GET /api/user/cars
-  - Description: Get all cars (used by the frontend to list available cars).
-  - Response: { success, cars } (each car populated with owner)
+```http
+  POST /api/user/login
+```
 
-Owner endpoints (protected)
+| Parameter  | Type     | Description                   |
+| :--------- | :------- | :---------------------------- |
+| `email`    | `string` | **Required**. User's email    |
+| `password` | `string` | **Required**. User's password |
 
-- POST /api/owner/change-role
+**Response:**
 
-  - Description: Promote authenticated user to owner role so they can list cars.
-  - Headers: Authorization: Bearer <token>
-  - Response: { success, message, user }
+```json
+{
+  "success": boolean,
+  "message": string,
+  "token": string,
+  "user": {
+    "id": string,
+    "name": string,
+    "email": string
+  }
+}
+```
 
-- POST /api/owner/add-car
+#### Get current user data
 
-  - Description: List a new car. Expects multipart/form-data with an image file.
-  - Headers: Authorization: Bearer <token>
-  - Content (multipart/form-data):
-    - `carData` (string) — JSON string of car fields (e.g., title, pricePerDay, location, etc.)
-    - `image` (file) — image file for the car
-  - Response: { success, message }
+```http
+  GET /api/user/data
+```
 
-- GET /api/owner/cars
+| Header          | Type     | Description                |
+| :-------------- | :------- | :------------------------- |
+| `Authorization` | `string` | **Required**. Bearer token |
 
-  - Description: Get cars belonging to the authenticated owner.
-  - Headers: Authorization: Bearer <token>
-  - Response: { success, cars }
+**Response:**
 
-- POST /api/owner/toggle-car
+```json
+{
+  "success": boolean,
+  "user": object
+}
+```
 
-  - Description: Toggle availability of a car owned by the authenticated user.
-  - Headers: Authorization: Bearer <token>
-  - Body (application/json): { carId }
-  - Response: { success, message }
+#### Get all cars
 
-- POST /api/owner/delete-car
+```http
+  GET /api/user/cars
+```
 
-  - Description: Delete a car owned by the authenticated user.
-  - Headers: Authorization: Bearer <token>
-  - Body (application/json): { carId }
-  - Response: { success, message }
+**Response:**
 
-- GET /api/owner/dashboard
+```json
+{
+  "success": boolean,
+  "cars": array
+}
+```
 
-  - Description: Get dashboard data (totalCars, totalBookings, pendingBookings, completedBookings, recentBookings, monthlyRevenue).
-  - Headers: Authorization: Bearer <token> (user must have role `owner`)
-  - Response: { success, dashboardData }
+---
 
-- POST /api/owner/update-image
-  - Description: Update the authenticated users profile image.
-  - Headers: Authorization: Bearer <token>
-  - Content (multipart/form-data): `image` (file)
-  - Response: { success, message }
+### Owner Endpoints (Protected)
 
-Booking endpoints
+#### Change user role to owner
 
-- POST /api/bookings/check-availability
+```http
+  POST /api/owner/change-role
+```
 
-  - Description: Find available cars for a given location and date range.
-  - Body (application/json): { location, pickupDate, returnDate }
-  - Response: { success, availableCars }
+| Header          | Type     | Description                |
+| :-------------- | :------- | :------------------------- |
+| `Authorization` | `string` | **Required**. Bearer token |
 
-- POST /api/bookings/create
+**Response:**
 
-  - Description: Create a booking for a car (protected).
-  - Headers: Authorization: Bearer <token>
-  - Body (application/json): { car, pickupDate, returnDate }
-    - `car` should be the car \_id
-  - Response: { success, message, booking }
+```json
+{
+  "success": boolean,
+  "message": string,
+  "user": object
+}
+```
 
-- GET /api/bookings/user
+#### Add a new car
 
-  - Description: Get bookings for the authenticated user.
-  - Headers: Authorization: Bearer <token>
-  - Response: { success, bookings }
+```http
+  POST /api/owner/add-car
+```
 
-- GET /api/bookings/owner
+| Header          | Type     | Description                |
+| :-------------- | :------- | :------------------------- |
+| `Authorization` | `string` | **Required**. Bearer token |
 
-  - Description: Get bookings for the authenticated owner (bookings where owner === user).
-  - Headers: Authorization: Bearer <token>
-  - Response: { success, bookings }
+**Body (multipart/form-data):**
 
-- POST /api/bookings/change-status
-  - Description: Owner can change the status of a booking (e.g., pending -> confirmed).
-  - Headers: Authorization: Bearer <token>
-  - Body (application/json): { bookingId, status }
-  - Response: { success, message }
+| Field     | Type     | Description                              |
+| :-------- | :------- | :--------------------------------------- |
+| `carData` | `string` | **Required**. JSON string of car details |
+| `image`   | `file`   | **Required**. Car image file             |
 
-Authentication and headers
+**Response:**
 
-- For protected routes include the header:
-  Authorization: Bearer <JWT token>
+```json
+{
+  "success": boolean,
+  "message": string
+}
+```
 
-Common response shape
+#### Get owner's cars
 
-- Most endpoints return a JSON object like:
-  { success: boolean, message?: string, <dataKey>: ... }
+```http
+  GET /api/owner/cars
+```
 
-Notes and assumptions
+| Header          | Type     | Description                |
+| :-------------- | :------- | :------------------------- |
+| `Authorization` | `string` | **Required**. Bearer token |
+
+**Response:**
+
+```json
+{
+  "success": boolean,
+  "cars": array
+}
+```
+
+#### Toggle car availability
+
+```http
+  POST /api/owner/toggle-car
+```
+
+| Header          | Type     | Description                |
+| :-------------- | :------- | :------------------------- |
+| `Authorization` | `string` | **Required**. Bearer token |
+
+| Parameter | Type     | Description                 |
+| :-------- | :------- | :-------------------------- |
+| `carId`   | `string` | **Required**. ID of the car |
+
+**Response:**
+
+```json
+{
+  "success": boolean,
+  "message": string
+}
+```
+
+#### Delete a car
+
+```http
+  POST /api/owner/delete-car
+```
+
+| Header          | Type     | Description                |
+| :-------------- | :------- | :------------------------- |
+| `Authorization` | `string` | **Required**. Bearer token |
+
+| Parameter | Type     | Description                 |
+| :-------- | :------- | :-------------------------- |
+| `carId`   | `string` | **Required**. ID of the car |
+
+**Response:**
+
+```json
+{
+  "success": boolean,
+  "message": string
+}
+```
+
+#### Get owner dashboard data
+
+```http
+  GET /api/owner/dashboard
+```
+
+| Header          | Type     | Description                             |
+| :-------------- | :------- | :-------------------------------------- |
+| `Authorization` | `string` | **Required**. Bearer token (owner role) |
+
+**Response:**
+
+```json
+{
+  "success": boolean,
+  "dashboardData": {
+    "totalCars": number,
+    "totalBookings": number,
+    "pendingBookings": number,
+    "completedBookings": number,
+    "recentBookings": array,
+    "monthlyRevenue": number
+  }
+}
+```
+
+#### Update profile image
+
+```http
+  POST /api/owner/update-image
+```
+
+| Header          | Type     | Description                |
+| :-------------- | :------- | :------------------------- |
+| `Authorization` | `string` | **Required**. Bearer token |
+
+**Body (multipart/form-data):**
+
+| Field   | Type   | Description                      |
+| :------ | :----- | :------------------------------- |
+| `image` | `file` | **Required**. Profile image file |
+
+**Response:**
+
+```json
+{
+  "success": boolean,
+  "message": string
+}
+```
+
+---
+
+### Booking Endpoints
+
+#### Check car availability
+
+```http
+  POST /api/bookings/check-availability
+```
+
+| Parameter    | Type     | Description                      |
+| :----------- | :------- | :------------------------------- |
+| `location`   | `string` | **Required**. Location to search |
+| `pickupDate` | `string` | **Required**. Pickup date        |
+| `returnDate` | `string` | **Required**. Return date        |
+
+**Response:**
+
+```json
+{
+  "success": boolean,
+  "availableCars": array
+}
+```
+
+#### Create a booking
+
+```http
+  POST /api/bookings/create
+```
+
+| Header          | Type     | Description                |
+| :-------------- | :------- | :------------------------- |
+| `Authorization` | `string` | **Required**. Bearer token |
+
+| Parameter    | Type     | Description               |
+| :----------- | :------- | :------------------------ |
+| `car`        | `string` | **Required**. Car ID      |
+| `pickupDate` | `string` | **Required**. Pickup date |
+| `returnDate` | `string` | **Required**. Return date |
+
+**Response:**
+
+```json
+{
+  "success": boolean,
+  "message": string,
+  "booking": object
+}
+```
+
+#### Get user bookings
+
+```http
+  GET /api/bookings/user
+```
+
+| Header          | Type     | Description                |
+| :-------------- | :------- | :------------------------- |
+| `Authorization` | `string` | **Required**. Bearer token |
+
+**Response:**
+
+```json
+{
+  "success": boolean,
+  "bookings": array
+}
+```
+
+#### Get owner bookings
+
+```http
+  GET /api/bookings/owner
+```
+
+| Header          | Type     | Description                |
+| :-------------- | :------- | :------------------------- |
+| `Authorization` | `string` | **Required**. Bearer token |
+
+**Response:**
+
+```json
+{
+  "success": boolean,
+  "bookings": array
+}
+```
+
+#### Change booking status
+
+```http
+  POST /api/bookings/change-status
+```
+
+| Header          | Type     | Description                        |
+| :-------------- | :------- | :--------------------------------- |
+| `Authorization` | `string` | **Required**. Bearer token (owner) |
+
+| Parameter   | Type     | Description                                |
+| :---------- | :------- | :----------------------------------------- |
+| `bookingId` | `string` | **Required**. Booking ID                   |
+| `status`    | `string` | **Required**. New status (e.g., confirmed) |
+
+**Response:**
+
+```json
+{
+  "success": boolean,
+  "message": string
+}
+```
+
+### Notes and assumptions
 
 - The exact request field names for car data (when listing a car) are based on how `carData` is parsed in `ownerController.listCar` — `carData` must be sent as a JSON string in a `multipart/form-data` request together with the `image` file.
 - Where endpoints require ownership checks (toggle/delete car, change booking status), the controllers enforce authorization and will return `400` with an `Unauthorized` message when checks fail.
-
-The CarRental-MERN project is a web application that allows users to rent cars. It is built using the MERN (MongoDB, Express, React, Node.js) stack.
 
 ### Main Function Points
 
